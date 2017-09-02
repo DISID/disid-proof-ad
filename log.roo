@@ -1,0 +1,15 @@
+// Spring Roo 2.0.0.RC2 [rev 76d128f] log opened at 2017-09-02 09:28:33
+project setup --topLevelPackage com.disid.ad --java 8 --projectName DisidAdProof
+jpa setup --provider HIBERNATE --database HYPERSONIC_IN_MEMORY --
+entity jpa --class ~.model.Profile
+field string ldapId --unique --notNull 
+field string name --unique --notNull 
+entity jpa --class ~.model.User --table LOCAL_USER
+field string ldapId --unique --notNull 
+field string name --notNull 
+field boolean blocked
+field boolean newRegistration
+repository jpa --all 
+service --all 
+focus --class ~.model.Profile
+field set --fieldName users --type ~.model.User --aggregation --cardinality MANY_TO_MANY
