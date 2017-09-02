@@ -13,3 +13,7 @@ repository jpa --all
 service --all 
 focus --class ~.model.Profile
 field set --fieldName users --type ~.model.User --aggregation --cardinality MANY_TO_MANY
+web mvc setup 
+web mvc view setup --type THYMELEAF 
+web mvc controller --all --responseType THYMELEAF
+security setup --provider DEFAULT 

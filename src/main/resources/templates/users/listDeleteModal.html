@@ -1,0 +1,22 @@
+<!--TABLE-->
+<div class="table-responsive" id="containerFields" data-th-fragment="user-entityModalConfirmBody" data-th-with="collectionLink=${@linkBuilder.of('UsersCollectionThymeleafController')},itemLink=${@linkBuilder.of('UsersItemThymeleafController')}">
+    <table id="user-entity-table-item-to-remove" data-data-load-url="${collectionLink.to('datatablesByIdsIn')}">
+      <thead>
+        <tr>
+          <th data-data="ldapId" data-th-text="#{label_user_ldapid}">ldapId</th>
+          <th data-data="name" data-th-text="#{label_user_name}">name</th>
+          <th data-data="blocked" data-th-text="#{label_user_blocked}">blocked</th>
+          <th data-data="newRegistration" data-th-text="#{label_user_newregistration}">newRegistration</th>
+        </tr>
+      </thead>
+      <tbody data-th-remove="all">
+        <tr>
+          <td>ldapId</td>
+          <td>name</td>
+          <td>blocked</td>
+          <td>newRegistration</td>
+        </tr>
+      </tbody>
+    </table>
+</div>
+<!-- /TABLE -->
