@@ -1,0 +1,14 @@
+dn: cn=Administrators,cn=users,dc=sambaad,dc=local
+objectclass: top
+objectclass: group
+cn: Administrators
+
+dn: cn=Police dispatchers,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: group
+cn: Police dispatchers
+
+dn: cn=Police call talkers,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: group
+cn: Police call talkers

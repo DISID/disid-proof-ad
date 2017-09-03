@@ -50,24 +50,6 @@ privileged aspect Profile_Roo_JavaBean {
      * 
      * @return String
      */
-    public String Profile.getLdapId() {
-        return this.ldapId;
-    }
-    
-    /**
-     * TODO Auto-generated method documentation
-     * 
-     * @param ldapId
-     */
-    public void Profile.setLdapId(String ldapId) {
-        this.ldapId = ldapId;
-    }
-    
-    /**
-     * TODO Auto-generated method documentation
-     * 
-     * @return String
-     */
     public String Profile.getName() {
         return this.name;
     }

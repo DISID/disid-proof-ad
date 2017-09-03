@@ -1,10 +1,18 @@
 package com.disid.ad.config;
 
+import com.disid.ad.integration.ldap.LdapProfileServiceImpl;
+import com.disid.ad.integration.ldap.LdapService;
+import com.disid.ad.integration.ldap.UpdatingLdifPopulator;
+import com.disid.ad.model.Profile;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
+
+import javax.naming.NamingException;
 
 /**
  * Configuration of LDAP services.
@@ -77,17 +85,33 @@ public class LdapConfiguration
   //        user.getObjectClassValues(),
   //        user.getBaseRdn() );
   //  }
-  //
-  //  /**
-  //   * Returns the service to manage groups in the LDAP service.
-  //   * @return the LDAP groups service
-  //   */
-  //  @Bean
-  //  public LdapService<LocalGroup> ldapGroupService()
-  //  {
-  //    LdapProperties.Sync.Group group = ldapProperties.getSync().getGroup();
-  //    return new LdapGroupServiceImpl( ldapTemplate(), group.getObjectClass(), group.getIdAttribute(),
-  //        group.getNameAttribute(), group.getBaseRdn() );
-  //  }
 
+  /**
+   * Returns the service to manage groups in the LDAP service.
+   * @return the LDAP groups service
+   */
+  @Bean
+  public LdapService<Profile> ldapProfileService()
+  {
+    //    LdapProperties.Sync.Group group = ldapProperties.getSync().getGroup();
+    return new LdapProfileServiceImpl( ldapTemplate() );
+  }
+
+  @Bean
+  public UpdatingLdifPopulator ldifPopulator() throws NamingException
+  {
+    //    LdapTestUtils.clearSubContexts( contextSource(), LdapUtils.newLdapName( "cn=Users" ) );
+    //
+    //    LdifPopulator populator = new LdifPopulator();
+    //    populator.setBase( ldapProperties.getContext().getBaseDn() );
+    //    populator.setClean( false );
+    //    populator.setContextSource( contextSource() );
+    //    populator.setDefaultBase( ldapProperties.getContext().getBaseDn() );
+    //    populator.setResource( new ClassPathResource( "test_data.ldif" ) );
+    //    return populator;
+
+    UpdatingLdifPopulator populator =
+        new UpdatingLdifPopulator( new ClassPathResource( "test_data.ldif" ), contextSource(), false );
+    return populator;
+  }
 }

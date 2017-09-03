@@ -37,7 +37,7 @@ public interface LdapService<T>
    * Updates the LDAP entry related to the given local entity.
    * @param element to update the related LDAP entry
    */
-  void update( T element );
+  void update( String currentName, T element );
 
   /**
    * Deletes the given element in the LDAP server

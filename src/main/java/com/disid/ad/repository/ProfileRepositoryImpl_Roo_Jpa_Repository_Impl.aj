@@ -26,12 +26,6 @@ privileged aspect ProfileRepositoryImpl_Roo_Jpa_Repository_Impl {
      * TODO Auto-generated attribute documentation
      * 
      */
-    public static final String ProfileRepositoryImpl.LDAP_ID = "ldapId";
-    
-    /**
-     * TODO Auto-generated attribute documentation
-     * 
-     */
     public static final String ProfileRepositoryImpl.NAME = "name";
     
     /**
@@ -47,11 +41,10 @@ privileged aspect ProfileRepositoryImpl_Roo_Jpa_Repository_Impl {
         
         JPQLQuery<Profile> query = from(profile);
         
-        Path<?>[] paths = new Path<?>[] {profile.ldapId,profile.name};        
+        Path<?>[] paths = new Path<?>[] {profile.name};        
         applyGlobalSearch(globalSearch, query, paths);
         
         AttributeMappingBuilder mapping = buildMapper()
-			.map(LDAP_ID, profile.ldapId)
 			.map(NAME, profile.name);
         
         applyPagination(pageable, query, mapping);
@@ -74,14 +67,13 @@ privileged aspect ProfileRepositoryImpl_Roo_Jpa_Repository_Impl {
         
         JPQLQuery<Profile> query = from(profile);
         
-        Path<?>[] paths = new Path<?>[] {profile.ldapId,profile.name};        
+        Path<?>[] paths = new Path<?>[] {profile.name};        
         applyGlobalSearch(globalSearch, query, paths);
         
         // Also, filter by the provided ids
         query.where(profile.id.in(ids));
         
         AttributeMappingBuilder mapping = buildMapper()
-			.map(LDAP_ID, profile.ldapId)
 			.map(NAME, profile.name);
         
         applyPagination(pageable, query, mapping);

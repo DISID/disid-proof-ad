@@ -1,5 +1,6 @@
 package com.disid.ad.repository;
 import com.disid.ad.model.Profile;
+
 import org.springframework.roo.addon.layers.repository.jpa.annotations.RooJpaRepository;
 
 /**
@@ -10,4 +11,8 @@ import org.springframework.roo.addon.layers.repository.jpa.annotations.RooJpaRep
  */
 @RooJpaRepository(entity = Profile.class)
 public interface ProfileRepository {
+
+  void deleteByNameNotIn( Iterable<String> names );
+
+  Profile findByName( String name );
 }

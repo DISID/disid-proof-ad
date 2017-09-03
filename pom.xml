@@ -286,6 +286,11 @@
         <artifactId>spring-security-test</artifactId>
         <scope>test</scope>
     </dependency>
+    <dependency>
+        <groupId>org.springframework.ldap</groupId>
+        <artifactId>spring-ldap-test</artifactId>
+        <scope>test</scope>
+    </dependency>
     
   
     <!-- Spring Boot starters -->

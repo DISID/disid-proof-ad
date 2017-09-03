@@ -56,14 +56,6 @@
              <fieldset id="containerFields">
               <legend class="sr-only" data-th-text="#{label_data_entity(#{label_profile})}">Profile data </legend>
 
-<div class="form-group has-error has-feedback" data-z="d131745e" id="profile-ldapid-field" data-th-classappend="${#fields.hasErrors('ldapId')}? 'has-error has-feedback'" data-th-class="form-group">
-  <label for="ldapId" class="col-md-3 control-label" data-th-text="#{label_profile_ldapid}">ldapId</label>
-  <div class="col-md-6">
-    <input id="ldapId" name="ldapId" data-th-value="*{{ldapId}}" type="text" class="form-control" placeholder="ldapId" data-th-placeholder="#{label_profile_ldapid}" data-toggle="tooltip" aria-describedby="ldapIdStatus" required="required" />
-      <span data-th-classappend="${#fields.hasErrors('ldapId')}? 'glyphicon glyphicon-remove form-control-feedback'" class="glyphicon glyphicon-remove form-control-feedback" data-th-if="${#fields.hasErrors('ldapId')}" aria-hidden="true"></span>
-      <span id="ldapId-error" class="help-block" data-th-if="${#fields.hasErrors('ldapId')}" data-th-errors="*{ldapId}">Error message.</span>
-  </div>
-</div>
 <div class="form-group has-error has-feedback" data-z="6ef2aede" id="profile-name-field" data-th-classappend="${#fields.hasErrors('name')}? 'has-error has-feedback'" data-th-class="form-group">
   <label for="name" class="col-md-3 control-label" data-th-text="#{label_profile_name}">name</label>
   <div class="col-md-6">

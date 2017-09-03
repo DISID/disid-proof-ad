@@ -16,7 +16,6 @@ privileged aspect Profile_Roo_ToString {
         return "Profile {" + 
                 "id='" + id + '\'' + 
                 ", version='" + version + '\'' + 
-                ", ldapId='" + ldapId + '\'' + 
                 ", name='" + name + '\'' + 
                 ", ITERABLE_TO_ADD_CANT_BE_NULL_MESSAGE='" + ITERABLE_TO_ADD_CANT_BE_NULL_MESSAGE + '\'' + 
                 ", ITERABLE_TO_REMOVE_CANT_BE_NULL_MESSAGE='" + ITERABLE_TO_REMOVE_CANT_BE_NULL_MESSAGE + '\'' + "}" + super.toString();

@@ -489,9 +489,6 @@ privileged aspect ProfilesCollectionThymeleafController_Roo_Thymeleaf {
         else if (columnName.equals("version")) {
             builder.addColumn(getMessageSource().getMessage("label_profile_version", null, "Version", locale), "version", Integer.class.getName(), 100);
         }
-        else if (columnName.equals("ldapId")) {
-            builder.addColumn(getMessageSource().getMessage("label_profile_ldapid", null, "Ldap Id", locale), "ldapId", String.class.getName(), 100);
-        }
         else if (columnName.equals("name")) {
             builder.addColumn(getMessageSource().getMessage("label_profile_name", null, "Name", locale), "name", String.class.getName(), 100);
         }
