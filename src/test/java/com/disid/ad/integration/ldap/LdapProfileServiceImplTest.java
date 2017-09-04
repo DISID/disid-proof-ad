@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.disid.ad.AbstractBaseIT;
 import com.disid.ad.model.Profile;
+import com.disid.ad.service.api.ProfileService;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class LdapProfileServiceImplTest extends AbstractBaseIT
 
   @Autowired
   private LocalDataProvider<Profile> profileProvider;
+
+  @Autowired
+  private ProfileService service;
 
   @Autowired
   private LdapService<Profile> ldapProfileService;
@@ -77,5 +81,17 @@ public class LdapProfileServiceImplTest extends AbstractBaseIT
 
     profilesAfter = ldapProfileService.findAll( profileProvider );
     assertThat( profilesAfter ).hasSameSizeAs( profiles ).extracting( NAME_PROPERTY ).contains( oldName );
+  }
+
+  @Test
+  public void synchronizeUpdatesAllProfiles()
+  {
+
+    List<String> names = ldapProfileService.synchronize( profileProvider );
+
+    List<Profile> dbProfiles = service.findAll();
+
+    assertThat( dbProfiles ).extracting( NAME_PROPERTY ).containsExactlyElementsOf( names );
+
   }
 }

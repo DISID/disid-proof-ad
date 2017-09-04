@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.disid.ad.AbstractBaseIT;
 import com.disid.ad.model.User;
+import com.disid.ad.service.api.UserService;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class LdapUserServiceImplTest extends AbstractBaseIT
 
   @Autowired
   private LocalDataProvider<User> userProvider;
+
+  @Autowired
+  private UserService service;
 
   @Autowired
   private LdapService<User> ldapUserService;
@@ -78,4 +82,17 @@ public class LdapUserServiceImplTest extends AbstractBaseIT
     usersAfter = ldapUserService.findAll( userProvider );
     assertThat( usersAfter ).hasSameSizeAs( users ).extracting( NAME_PROPERTY ).contains( oldName );
   }
+
+  @Test
+  public void synchronizeUpdatesAllUsers()
+  {
+
+    List<String> names = ldapUserService.synchronize( userProvider );
+
+    List<User> dbUsers = service.findAll();
+
+    assertThat( dbUsers ).extracting( NAME_PROPERTY ).containsExactlyElementsOf( names );
+
+  }
+
 }
