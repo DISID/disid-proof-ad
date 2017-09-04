@@ -1,5 +1,7 @@
 package com.disid.ad.config;
 
+import com.disid.ad.integration.ldap.LdapProfileService;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
 import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer.PasswordCompareConfigurer;
@@ -425,67 +427,53 @@ public class LdapProperties
     {
 
       /**
-       * The attribute in the group entries which uniquely identifies them from the sibling entries.
-       * Defaults to 'cn'.
+       * The objectClassValues to apply when creating a new profile.
+       * Defaults to 'top,group'.
        */
-      private String idAttribute = "cn";
+      private String[] objectClassValues = LdapProfileService.DEFAULT_OBJECT_CLASSES;
 
       /**
-       * The objectClass of the groups.
-       * Defaults to 'group'.
+       * The search base to apply when looking for profiles relative to the 
+       * {@link Context#getBaseDn()}. This relative base will be used also to create
+       * new groups into.
+       * Defaults to 'cn=Users'.
        */
-      private String objectClass = "group";
+      private String searchBase = LdapProfileService.DEFAULT_SEARCH_BASE;
 
       /**
-       * The attribute in the group entries to read the group name from.
-       * Defaults to 'name'.
+       * Filter to apply when looking for profiles.
+       * Defaults to '(&(objectClass=group)(!(isCriticalSystemObject=TRUE)))' 
        */
-      private String nameAttribute = "name";
+      private String searchFilter = LdapProfileService.DEFAULT_SEARCH_FILTER;
 
-      /**
-       * The RDN identifier of the parent entry where to add the new created groups.
-       * Defaults to "ou=groups".
-       */
-      private String baseRdn = "ou=groups";
-
-      public String getIdAttribute()
+      public String[] getObjectClassValues()
       {
-        return idAttribute;
+        return objectClassValues;
       }
 
-      public void setIdAttribute( String idAttribute )
+      public void setObjectClassValues( String[] objectClassValues )
       {
-        this.idAttribute = idAttribute;
+        this.objectClassValues = objectClassValues;
       }
 
-      public String getObjectClass()
+      public String getSearchBase()
       {
-        return objectClass;
+        return searchBase;
       }
 
-      public void setObjectClass( String objectClass )
+      public void setSearchBase( String searchBase )
       {
-        this.objectClass = objectClass;
+        this.searchBase = searchBase;
       }
 
-      public String getNameAttribute()
+      public String getSearchFilter()
       {
-        return nameAttribute;
+        return searchFilter;
       }
 
-      public void setNameAttribute( String nameAttribute )
+      public void setSearchFilter( String searchFilter )
       {
-        this.nameAttribute = nameAttribute;
-      }
-
-      public String getBaseRdn()
-      {
-        return baseRdn;
-      }
-
-      public void setBaseRdn( String baseRdn )
-      {
-        this.baseRdn = baseRdn;
+        this.searchFilter = searchFilter;
       }
 
     }

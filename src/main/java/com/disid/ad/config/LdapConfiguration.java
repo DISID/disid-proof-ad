@@ -93,23 +93,14 @@ public class LdapConfiguration
   @Bean
   public LdapService<Profile> ldapProfileService()
   {
-    //    LdapProperties.Sync.Group group = ldapProperties.getSync().getGroup();
-    return new LdapProfileServiceImpl( ldapTemplate() );
+    LdapProperties.Sync.Group group = ldapProperties.getSync().getGroup();
+    return new LdapProfileServiceImpl( ldapTemplate(), group.getObjectClassValues(), group.getSearchBase(),
+        group.getSearchFilter() );
   }
 
   @Bean
   public UpdatingLdifPopulator ldifPopulator() throws NamingException
   {
-    //    LdapTestUtils.clearSubContexts( contextSource(), LdapUtils.newLdapName( "cn=Users" ) );
-    //
-    //    LdifPopulator populator = new LdifPopulator();
-    //    populator.setBase( ldapProperties.getContext().getBaseDn() );
-    //    populator.setClean( false );
-    //    populator.setContextSource( contextSource() );
-    //    populator.setDefaultBase( ldapProperties.getContext().getBaseDn() );
-    //    populator.setResource( new ClassPathResource( "test_data.ldif" ) );
-    //    return populator;
-
     UpdatingLdifPopulator populator =
         new UpdatingLdifPopulator( new ClassPathResource( "test_data.ldif" ), contextSource(), false );
     return populator;
