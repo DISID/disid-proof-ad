@@ -3,8 +3,6 @@ package com.disid.ad.integration.ad;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.disid.ad.AbstractBaseIT;
-import com.disid.ad.integration.ad.ActiveDirectoryService;
-import com.disid.ad.integration.ad.LocalDataProvider;
 import com.disid.ad.model.User;
 import com.disid.ad.service.api.UserService;
 
@@ -44,6 +42,7 @@ public class ActiveDirectoryUserServiceImplTest extends AbstractBaseIT
 
     String name = "Create and Delete user test";
     User profile = userProvider.createByName( name );
+    profile.setLogin( "createdeltest" );
 
     ldapUserService.create( profile );
 
