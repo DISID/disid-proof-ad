@@ -24,7 +24,8 @@ public class LdapProfileServiceImpl implements LdapService<Profile>
 {
   public static final String DEFAULT_NAME_ATTRIBUTE = "cn";
   public static final String DEFAULT_SEARCH_BASE = "cn=Users";
-  public static final String DEFAULT_SEARCH_FILTER = "(&(objectClass=group)(!(isCriticalSystemObject=TRUE)))";
+  public static final String DEFAULT_SEARCH_FILTER = // 
+      "(&(objectClass=group)(!(isCriticalSystemObject=TRUE)))";
   public static final String[] DEFAULT_OBJECT_CLASSES = new String[] { "top", "group" };
 
   private final LdapTemplate ldapTemplate;
