@@ -1,5 +1,6 @@
 package com.disid.ad.integration.ldap;
 
+import com.disid.ad.config.LdapProperties.Context;
 import com.disid.ad.model.Profile;
 
 import org.springframework.ldap.core.AttributesMapper;
@@ -31,12 +32,8 @@ public class LdapProfileServiceImpl implements LdapProfileService
   private final String searchFilter;
 
   /**
-   * Creates a new service to manage profiles in the LDAP server
-   * @param ldapTemplate to perform LDAP operations
-   * @param mainObjectClass of the profiles in the LDAP server
-   * @param idAttribute attribute which identifies uniquely a profile from its sibling entries
-   * @param nameAttribute the attribute to use as the profile's name
-   * @param searchBase 
+   * Creates a new service to manage profiles in the ActiveDirectory server
+   * @param ldapTemplate to perform ActiveDirectory operations
    */
   public LdapProfileServiceImpl( LdapTemplate ldapTemplate )
   {
@@ -44,12 +41,12 @@ public class LdapProfileServiceImpl implements LdapProfileService
   }
 
   /**
-   * Creates a new service to manage profiles in the LDAP server
-   * @param ldapTemplate to perform LDAP operations
-   * @param mainObjectClass of the profiles in the LDAP server
-   * @param idAttribute attribute which identifies uniquely a profile from its sibling entries
-   * @param nameAttribute the attribute to use as the profile's name
-   * @param searchBase 
+   * Creates a new service to manage profiles in the ActiveDirectory server
+   * @param ldapTemplate to perform ActiveDirectory operations
+   * @param objectClassValues list of object classes to create Profile entries 
+   * @param searchBase the search base to apply when looking for profiles relative to the 
+   * {@link Context#getBaseDn()}. This relative base will be used also to create new groups into.
+   * @param searchFilter filter to apply when looking for profiles.
    */
   public LdapProfileServiceImpl( LdapTemplate ldapTemplate, String[] objectClassValues, String searchBase,
       String searchFilter )
@@ -63,18 +60,19 @@ public class LdapProfileServiceImpl implements LdapProfileService
   @Override
   public List<Profile> findAll( LocalDataProvider<Profile> provider )
   {
-    return findAllWithMapper( new ProfileAttributesMapper( provider ) );
+    return findAllWithMapper( new ProfileAttributesMapper( provider, this.nameAttribute ) );
   }
 
   @Override
   public List<String> synchronize( LocalDataProvider<Profile> provider )
   {
-    List<String> ldapIds = findAllWithMapper( new ProfileSynchronizationAndLdapIdAttributesMapper( provider ) );
-    if ( ldapIds != null && !ldapIds.isEmpty() )
+    List<String> names =
+        findAllWithMapper( new ProfileSynchronizationAndLdapIdAttributesMapper( provider, nameAttribute ) );
+    if ( names != null && !names.isEmpty() )
     {
-      provider.deleteByNameNotIn( ldapIds );
+      provider.deleteByNameNotIn( names );
     }
-    return ldapIds;
+    return names;
   }
 
   @Override
@@ -116,58 +114,37 @@ public class LdapProfileServiceImpl implements LdapProfileService
    * That means profiles that exist in LDAP but not in the app will be created, the ones that
    * already exist will be updated, and the ones that don't exist in LDAP will be deleted.
    */
-  private class ProfileSynchronizationAndLdapIdAttributesMapper implements AttributesMapper<String>
+  private class ProfileSynchronizationAndLdapIdAttributesMapper extends SynchronizingAttributeMapper<Profile>
   {
 
-    private final LocalDataProvider<Profile> provider;
-
-    public ProfileSynchronizationAndLdapIdAttributesMapper( LocalDataProvider<Profile> provider )
+    public ProfileSynchronizationAndLdapIdAttributesMapper( LocalDataProvider<Profile> provider, String attributeName )
     {
-      this.provider = provider;
+      super( provider, attributeName );
     }
 
-    public String mapFromAttributes( Attributes attrs ) throws NamingException
+    @Override
+    protected void mapAttributesToElement( Attributes attrs, Profile element ) throws NamingException
     {
-      String name = getName( attrs );
-
-      // Find in the application database
-      Profile profile = provider.findByName( name );
-      if ( profile == null )
-      {
-        profile = provider.createByName( name );
-      }
-
-      mapAttributes( attrs, profile );
-
-      // Store the changes in the local repository
-      provider.saveFromLdap( profile );
-
-      return name;
+      mapAttributes( attrs, element );
     }
+
   }
 
   /**
    * {@link AttributesMapper} that maps LDAP group data to new {@link Profile} instances.
    */
-  private class ProfileAttributesMapper implements AttributesMapper<Profile>
+  private class ProfileAttributesMapper extends ProvidedAttributeMapper<Profile>
   {
 
-    private final LocalDataProvider<Profile> provider;
-
-    public ProfileAttributesMapper( LocalDataProvider<Profile> provider )
+    public ProfileAttributesMapper( LocalDataProvider<Profile> provider, String attributeName )
     {
-      this.provider = provider;
+      super( provider, attributeName );
     }
 
-    public Profile mapFromAttributes( Attributes attrs ) throws NamingException
+    @Override
+    protected void mapAttributesToElement( Attributes attrs, Profile element ) throws NamingException
     {
-      String name = getName( attrs );
-
-      Profile profile = provider.createByName( name );
-
-      mapAttributes( attrs, profile );
-
-      return profile;
+      mapAttributes( attrs, element );
     }
   }
 
@@ -194,11 +171,6 @@ public class LdapProfileServiceImpl implements LdapProfileService
   private void mapAttributes( Attributes attrs, Profile profile ) throws NamingException
   {
     profile.setName( (String) attrs.get( nameAttribute ).get() );
-  }
-
-  private String getName( Attributes attrs ) throws NamingException
-  {
-    return (String) attrs.get( nameAttribute ).get();
   }
 
 }
