@@ -1,4 +1,15 @@
-dn: cn=Administrators,cn=users,dc=sambaad,dc=local
+dn: dc=sambaad,dc=local
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: sambaad
+
+dn: cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: organizationalUnit
+cn: Users
+
+dn: cn=Administrators,cn=Users,dc=sambaad,dc=local
 objectclass: top
 objectclass: group
 cn: Administrators

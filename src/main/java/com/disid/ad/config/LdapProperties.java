@@ -110,6 +110,12 @@ public class LdapProperties
      */
     private String domain = "";
 
+    /**
+     * A LDIF file to load data on application start.
+     * Defaults to 'classpath:data.ldif'.
+     */
+    private String ldif = "classpath:data.ldif";
+
     public String getUrl()
     {
       return url;
@@ -158,6 +164,16 @@ public class LdapProperties
     public void setDomain( String domain )
     {
       this.domain = domain;
+    }
+
+    public String getLdif()
+    {
+      return ldif;
+    }
+
+    public void setLdif( String ldif )
+    {
+      this.ldif = ldif;
     }
   }
 
