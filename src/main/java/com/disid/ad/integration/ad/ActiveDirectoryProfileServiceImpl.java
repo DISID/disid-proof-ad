@@ -8,11 +8,16 @@ import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
+import org.springframework.ldap.support.LdapUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
+import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -124,6 +129,15 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
     for ( User user : users )
     {
       Name userDn = userDnBuilder.getName( user );
+      Name baseLdapName = ( (BaseLdapPathContextSource) ldapTemplate.getContextSource() ).getBaseLdapName();
+      try
+      {
+        userDn = baseLdapName.addAll( userDn );
+      }
+      catch ( InvalidNameException e )
+      {
+        throw LdapUtils.convertLdapException( e );
+      }
       DirContextOperations operations = ldapTemplate.lookupContext( dn );
       operations.addAttributeValue( "member", userDn.toString() );
 
@@ -139,12 +153,46 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
     for ( User user : users )
     {
       Name userDn = userDnBuilder.getName( user );
-      //      Name baseLdapName = ( (BaseLdapPathContextSource) ldapTemplate.getContextSource() ).getBaseLdapName();
-      //      userDn = baseLdapName.addAll( userDn );
+      Name baseLdapName = ( (BaseLdapPathContextSource) ldapTemplate.getContextSource() ).getBaseLdapName();
+      try
+      {
+        userDn = baseLdapName.addAll( userDn );
+      }
+      catch ( InvalidNameException e )
+      {
+        throw LdapUtils.convertLdapException( e );
+      }
 
       ldapTemplate.modifyAttributes( groupDn, new ModificationItem[] {
           new ModificationItem( DirContext.REMOVE_ATTRIBUTE, new BasicAttribute( "member", userDn.toString() ) ) } );
     }
+  }
+
+  @Override
+  public List<String> getUserNames( Profile profile )
+  {
+    return ldapTemplate.lookup( dnBuilder.getName( profile ), new AttributesMapper<List<String>>()
+    {
+
+      @Override
+      public List<String> mapFromAttributes( Attributes attributes ) throws NamingException
+      {
+
+        List<String> userNames = new ArrayList<>();
+        //        LdapUtils.collectAttributeValues( attributes, "member", userNames, String.class );
+
+        Enumeration<?> values = attributes.get( "member" ).getAll();
+
+        while ( values.hasMoreElements() )
+        {
+          Object value = values.nextElement();
+          userNames.add( value.toString() );
+        }
+
+        return userNames;
+      }
+
+    } );
   }
 
   /**

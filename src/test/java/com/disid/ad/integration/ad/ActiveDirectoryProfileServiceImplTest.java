@@ -3,14 +3,14 @@ package com.disid.ad.integration.ad;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.disid.ad.AbstractBaseIT;
-import com.disid.ad.integration.ad.ActiveDirectoryService;
-import com.disid.ad.integration.ad.LocalDataProvider;
 import com.disid.ad.model.Profile;
+import com.disid.ad.model.User;
 import com.disid.ad.service.api.ProfileService;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ActiveDirectoryProfileServiceImplTest extends AbstractBaseIT
@@ -23,10 +23,16 @@ public class ActiveDirectoryProfileServiceImplTest extends AbstractBaseIT
   private LocalDataProvider<Profile> profileProvider;
 
   @Autowired
+  private LocalDataProvider<User> userProvider;
+
+  @Autowired
   private ProfileService service;
 
   @Autowired
-  private ActiveDirectoryService<Profile> ldapProfileService;
+  private ActiveDirectoryProfileService ldapProfileService;
+
+  @Autowired
+  private ActiveDirectoryService<User> ldapUserService;
 
   @Test
   public void findAllShouldReturnAllProfiles()
@@ -95,5 +101,27 @@ public class ActiveDirectoryProfileServiceImplTest extends AbstractBaseIT
 
     assertThat( dbProfiles ).extracting( NAME_PROPERTY ).containsExactlyElementsOf( names );
 
+  }
+
+  @Test
+  public void addDeleteUsersUpdatesProfilesUsers()
+  {
+    List<Profile> profiles = ldapProfileService.findAll( profileProvider );
+    Profile firstProfile = profiles.get( 0 );
+
+    List<User> users = ldapUserService.findAll( userProvider );
+
+    ldapProfileService.addUsers( firstProfile, users );
+
+    List<String> userNames = ldapProfileService.getUserNames( firstProfile );
+    
+    assertThat( userNames ).hasSameSizeAs( users );
+    
+    ldapProfileService.removeUsers( firstProfile, Collections.singleton( users.get( 0 ) ) );
+    
+    List<String> userNamesAfterRemove = ldapProfileService.getUserNames( firstProfile );
+    
+    assertThat( userNamesAfterRemove ).size().isEqualTo( userNames.size() - 1 );
+    
   }
 }
