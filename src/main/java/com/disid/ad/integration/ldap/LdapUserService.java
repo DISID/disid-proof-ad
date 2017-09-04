@@ -10,9 +10,10 @@ public interface LdapUserService extends LdapService<User>
   public static final String DEFAULT_NAME_ATTRIBUTE = "cn";
   public static final String DEFAULT_SEARCH_BASE = "cn=Users";
   public static final String DEFAULT_SEARCH_FILTER = // 
-      "(&(objectClass=group)(!(isCriticalSystemObject=TRUE)))";
-  public static final String[] DEFAULT_OBJECT_CLASSES = new String[] { "top", "group" };
-  public static final String DEFAULT_LOGIN_ATTRIBUTE = "cn";
+      "(&(objectClass=user)(!(isCriticalSystemObject=TRUE)))";
+  public static final String[] DEFAULT_OBJECT_CLASSES =
+      new String[] { "top", "person", "organizationalPerson", "user" };
+  public static final String DEFAULT_LOGIN_ATTRIBUTE = "sAMAccountName";
   public static final String DEFAULT_PASSWORD_ATTRIBUTE = "userPassword";
 
   /**

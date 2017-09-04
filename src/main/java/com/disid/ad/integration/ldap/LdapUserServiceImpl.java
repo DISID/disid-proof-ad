@@ -5,6 +5,7 @@ import com.disid.ad.model.User;
 
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextAdapter;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,18 +132,14 @@ public class LdapUserServiceImpl implements LdapUserService
 
     context.setAttributeValues( OBJECT_CLASS_ATTRIBUTE, objectClassValues );
     context.setAttributeValue( this.nameAttribute, user.getName() );
-    //    context.setAttributeValue( "sn", user.getName() );
-    //    context.setAttributeValue( "sAMAccountName", user.getLdapId() );
-    //context.setAttributeValue( "objectCategory", "person" );
-    //    context.setAttributeValue( "memberof", "CN=Domain Users,CN=Users,DC=sambaad,DC=local" );
-    //    context.setAttributeValue( "sn", user.getName() );
+    context.setAttributeValue( this.loginAttribute, user.getLogin() );
 
     // Note that the user object must be created before the password
     // can be set. Therefore as the user is created with no
     // password, userAccountControl must be set to the following
     // otherwise the Win2K3 password filter will return error 53
     // unwilling to perform.
-    context.setAttributeValue( USER_ACCOUNT_CONTROL_ATTRIBUTE, ACCOUNT_CONTROL_POST_PASSWORD );
+    context.setAttributeValue( USER_ACCOUNT_CONTROL_ATTRIBUTE, ACCOUNT_CONTROL_PRE_PASSWORD );
 
     ldapTemplate.bind( context );
   }
@@ -160,15 +157,12 @@ public class LdapUserServiceImpl implements LdapUserService
       ldapTemplate.rename( dn, newDn );
     }
 
-    // TODO: update normal properties
-    //    DirContextOperations operations = ldapTemplate.lookupContext( dn );
-    //
-    //    operations.setAttributeValue( this.idAttribute, user.getLdapId() );
-    //    operations.setAttributeValue( this.loginAttribute, user.getLogin() );
-    //    operations.setAttributeValue( this.nameAttribute, user.getName() );
-    //    //    operations.setAttributeValue( "sn", user.getName() );
-    //
-    //    ldapTemplate.modifyAttributes( operations );
+    LdapName dn = buildDn( user );
+    DirContextOperations operations = ldapTemplate.lookupContext( dn );
+
+    operations.setAttributeValue( this.loginAttribute, user.getLogin() );
+
+    ldapTemplate.modifyAttributes( operations );
   }
 
   @Override
@@ -262,8 +256,7 @@ public class LdapUserServiceImpl implements LdapUserService
   private void mapAttributes( Attributes attrs, User user ) throws NamingException
   {
     user.setName( (String) attrs.get( nameAttribute ).get() );
-    user.setBlocked( false );
-    user.setNewRegistration( true );
+    user.setLogin( (String) attrs.get( loginAttribute ).get() );
   }
 
   private byte[] toActiveDirectoryPasswordFormat( String password )

@@ -64,13 +64,4 @@ public class Profile
   @RooJpaRelation( type = JpaRelationType.AGGREGATION )
   private Set<User> users = new HashSet<User>();
 
-  protected Profile()
-  {
-    // Default empty constructor needed by JPA.
-  }
-
-  public Profile( String name )
-  {
-    this.name = name;
-  }
 }

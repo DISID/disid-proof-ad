@@ -23,3 +23,30 @@ dn: cn=Police call talkers,cn=Users,dc=sambaad,dc=local
 objectclass: top
 objectclass: group
 cn: Police call talkers
+
+dn: cn=Call take supervisor,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: user
+cn: Call take supervisor
+sAMAccountName: JSmith
+userAccountControl: 512
+
+dn: cn=Ken Ryan,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: user
+cn: Ken Ryan
+sAMAccountName: KRyan
+userAccountControl: 512
+
+dn: cn=Summer Nine,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: user
+cn: Summer Nine
+sAMAccountName: Chengdu
+userAccountControl: 512

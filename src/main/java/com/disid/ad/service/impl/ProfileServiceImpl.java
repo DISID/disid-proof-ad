@@ -19,7 +19,9 @@ public class ProfileServiceImpl implements ProfileService, LocalDataProvider<Pro
   @Override
   public Profile createByName( String name )
   {
-    return new Profile( name );
+    Profile profile = new Profile();
+    profile.setName( name );
+    return profile;
   }
 
   @Override

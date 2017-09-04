@@ -489,11 +489,11 @@ privileged aspect UsersCollectionThymeleafController_Roo_Thymeleaf {
         else if (columnName.equals("version")) {
             builder.addColumn(getMessageSource().getMessage("label_user_version", null, "Version", locale), "version", Integer.class.getName(), 100);
         }
-        else if (columnName.equals("ldapId")) {
-            builder.addColumn(getMessageSource().getMessage("label_user_ldapid", null, "Ldap Id", locale), "ldapId", String.class.getName(), 100);
-        }
         else if (columnName.equals("name")) {
             builder.addColumn(getMessageSource().getMessage("label_user_name", null, "Name", locale), "name", String.class.getName(), 100);
+        }
+        else if (columnName.equals("login")) {
+            builder.addColumn(getMessageSource().getMessage("label_user_login", null, "Login", locale), "login", String.class.getName(), 100);
         }
         else if (columnName.equals("blocked")) {
             builder.addColumn(getMessageSource().getMessage("label_user_blocked", null, "Blocked", locale), "blocked", Boolean.class.getName(), 100);

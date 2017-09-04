@@ -28,13 +28,13 @@ privileged aspect UserRepositoryImpl_Roo_Jpa_Repository_Impl {
      * TODO Auto-generated attribute documentation
      * 
      */
-    public static final String UserRepositoryImpl.LDAP_ID = "ldapId";
+    public static final String UserRepositoryImpl.NAME = "name";
     
     /**
      * TODO Auto-generated attribute documentation
      * 
      */
-    public static final String UserRepositoryImpl.NAME = "name";
+    public static final String UserRepositoryImpl.LOGIN = "login";
     
     /**
      * TODO Auto-generated attribute documentation
@@ -61,12 +61,12 @@ privileged aspect UserRepositoryImpl_Roo_Jpa_Repository_Impl {
         
         JPQLQuery<User> query = from(user);
         
-        Path<?>[] paths = new Path<?>[] {user.ldapId,user.name,user.blocked,user.newRegistration};        
+        Path<?>[] paths = new Path<?>[] {user.name,user.login,user.blocked,user.newRegistration};        
         applyGlobalSearch(globalSearch, query, paths);
         
         AttributeMappingBuilder mapping = buildMapper()
-			.map(LDAP_ID, user.ldapId)
 			.map(NAME, user.name)
+			.map(LOGIN, user.login)
 			.map(BLOCKED, user.blocked)
 			.map(NEW_REGISTRATION, user.newRegistration);
         
@@ -90,15 +90,15 @@ privileged aspect UserRepositoryImpl_Roo_Jpa_Repository_Impl {
         
         JPQLQuery<User> query = from(user);
         
-        Path<?>[] paths = new Path<?>[] {user.ldapId,user.name,user.blocked,user.newRegistration};        
+        Path<?>[] paths = new Path<?>[] {user.name,user.login,user.blocked,user.newRegistration};        
         applyGlobalSearch(globalSearch, query, paths);
         
         // Also, filter by the provided ids
         query.where(user.id.in(ids));
         
         AttributeMappingBuilder mapping = buildMapper()
-			.map(LDAP_ID, user.ldapId)
 			.map(NAME, user.name)
+			.map(LOGIN, user.login)
 			.map(BLOCKED, user.blocked)
 			.map(NEW_REGISTRATION, user.newRegistration);
         
@@ -125,12 +125,12 @@ privileged aspect UserRepositoryImpl_Roo_Jpa_Repository_Impl {
         Assert.notNull(profiles, "profiles is required");
         
         query.where(user.profiles.contains(profiles));
-        Path<?>[] paths = new Path<?>[] {user.ldapId,user.name,user.blocked,user.newRegistration};        
+        Path<?>[] paths = new Path<?>[] {user.name,user.login,user.blocked,user.newRegistration};        
         applyGlobalSearch(globalSearch, query, paths);
         
         AttributeMappingBuilder mapping = buildMapper()
-			.map(LDAP_ID, user.ldapId)
 			.map(NAME, user.name)
+			.map(LOGIN, user.login)
 			.map(BLOCKED, user.blocked)
 			.map(NEW_REGISTRATION, user.newRegistration);
         

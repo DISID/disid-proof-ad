@@ -50,24 +50,6 @@ privileged aspect User_Roo_JavaBean {
      * 
      * @return String
      */
-    public String User.getLdapId() {
-        return this.ldapId;
-    }
-    
-    /**
-     * TODO Auto-generated method documentation
-     * 
-     * @param ldapId
-     */
-    public void User.setLdapId(String ldapId) {
-        this.ldapId = ldapId;
-    }
-    
-    /**
-     * TODO Auto-generated method documentation
-     * 
-     * @return String
-     */
     public String User.getName() {
         return this.name;
     }
@@ -79,6 +61,24 @@ privileged aspect User_Roo_JavaBean {
      */
     public void User.setName(String name) {
         this.name = name;
+    }
+    
+    /**
+     * TODO Auto-generated method documentation
+     * 
+     * @return String
+     */
+    public String User.getLogin() {
+        return this.login;
+    }
+    
+    /**
+     * TODO Auto-generated method documentation
+     * 
+     * @param login
+     */
+    public void User.setLogin(String login) {
+        this.login = login;
     }
     
     /**

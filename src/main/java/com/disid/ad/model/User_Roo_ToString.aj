@@ -16,8 +16,8 @@ privileged aspect User_Roo_ToString {
         return "User {" + 
                 "id='" + id + '\'' + 
                 ", version='" + version + '\'' + 
-                ", ldapId='" + ldapId + '\'' + 
                 ", name='" + name + '\'' + 
+                ", login='" + login + '\'' + 
                 ", blocked='" + blocked + '\'' + 
                 ", newRegistration='" + newRegistration + '\'' + 
                 ", ITERABLE_TO_ADD_CANT_BE_NULL_MESSAGE='" + ITERABLE_TO_ADD_CANT_BE_NULL_MESSAGE + '\'' + 

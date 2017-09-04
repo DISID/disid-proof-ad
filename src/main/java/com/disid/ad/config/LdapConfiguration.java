@@ -3,8 +3,10 @@ package com.disid.ad.config;
 import com.disid.ad.config.LdapProperties.Context;
 import com.disid.ad.integration.ldap.LdapProfileServiceImpl;
 import com.disid.ad.integration.ldap.LdapService;
+import com.disid.ad.integration.ldap.LdapUserServiceImpl;
 import com.disid.ad.integration.ldap.UpdatingLdifPopulator;
 import com.disid.ad.model.Profile;
+import com.disid.ad.model.User;
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
@@ -154,19 +156,16 @@ public class LdapConfiguration
           group.getSearchFilter() );
     }
 
-    //  /**
-    //   * Returns the service to manage users in the LDAP service.
-    //   * @return the LDAP users service
-    //   */
-    //  @Bean
-    //  public LdapService<LocalUser> ldapUserService()
-    //  {
-    //    LdapProperties.Sync.User user = ldapProperties.getSync().getUser();
-    //    return new LdapUserServiceImpl( ldapTemplate(), user.getObjectClass(), user.getIdAttribute(),
-    //        user.getNameAttribute(), ldapProperties.getAuth().getPasswordAttribute(), user.getAccountAttribute(),
-    //        user.getObjectClassValues(),
-    //        user.getBaseRdn() );
-    //  }
+    /**
+     * Returns the service to manage users in the LDAP service.
+     * @return the LDAP users service
+     */
+    @Bean
+    public LdapService<User> ldapUserService()
+    {
+      LdapProperties.Sync.User user = ldapProperties.getSync().getUser();
+      return new LdapUserServiceImpl( ldapTemplate() );
+    }
 
     @Bean
     public UpdatingLdifPopulator ldifPopulator() throws NamingException

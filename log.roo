@@ -17,3 +17,5 @@ web mvc setup
 web mvc view setup --type THYMELEAF 
 web mvc controller --all --responseType THYMELEAF
 security setup --provider DEFAULT 
+// Spring Roo 2.0.0.RC2 [rev 76d128f] log opened at 2017-09-04 12:57:43
+// Spring Roo 2.0.0.RC2 [rev 76d128f] log opened at 2017-09-04 13:00:27
