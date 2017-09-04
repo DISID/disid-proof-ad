@@ -7,9 +7,11 @@ import com.disid.ad.model.Profile;
  */
 public interface ActiveDirectoryProfileService extends ActiveDirectoryService<Profile>
 {
-  public static final String DEFAULT_NAME_ATTRIBUTE = "cn";
-  public static final String DEFAULT_SEARCH_BASE = "cn=Users";
-  public static final String DEFAULT_SEARCH_FILTER = // 
+  static final String DEFAULT_NAME_ATTRIBUTE = "cn";
+  static final String DEFAULT_SEARCH_BASE = "cn=Users";
+  static final String DEFAULT_SEARCH_FILTER = // 
       "(&(objectClass=group)(!(isCriticalSystemObject=TRUE)))";
-  public static final String[] DEFAULT_OBJECT_CLASSES = new String[] { "top", "group" };
+  static final String[] DEFAULT_OBJECT_CLASSES = new String[] { "top", "group" };
+
+
 }
