@@ -1,6 +1,6 @@
 package com.disid.ad.service.impl;
 
-import com.disid.ad.integration.ldap.LocalDataProvider;
+import com.disid.ad.integration.ad.LocalDataProvider;
 import com.disid.ad.model.User;
 import com.disid.ad.service.api.UserService;
 

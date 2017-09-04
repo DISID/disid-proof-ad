@@ -1,4 +1,4 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @param <T> the type of elements to manage
  */
-public interface LdapService<T>
+public interface ActiveDirectoryService<T>
 {
   static final String OBJECT_CLASS_ATTRIBUTE = "objectClass";
 

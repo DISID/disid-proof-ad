@@ -1,6 +1,6 @@
 package com.disid.ad.config;
 
-import com.disid.ad.integration.ldap.LdapProfileService;
+import com.disid.ad.integration.ad.ActiveDirectoryProfileService;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
@@ -16,9 +16,9 @@ import javax.validation.constraints.NotNull;
  * LDAP configuration properties
  */
 @Component
-@ConfigurationProperties( prefix = "application.ldap", ignoreUnknownFields = false )
+@ConfigurationProperties( prefix = "application.ad", ignoreUnknownFields = false )
 @Validated
-public class LdapProperties
+public class ActiveDirectoryProperties
 {
 
   @Valid
@@ -446,7 +446,7 @@ public class LdapProperties
        * The objectClassValues to apply when creating a new profile.
        * Defaults to 'top,group'.
        */
-      private String[] objectClassValues = LdapProfileService.DEFAULT_OBJECT_CLASSES;
+      private String[] objectClassValues = ActiveDirectoryProfileService.DEFAULT_OBJECT_CLASSES;
 
       /**
        * The search base to apply when looking for profiles relative to the 
@@ -454,13 +454,13 @@ public class LdapProperties
        * new groups into.
        * Defaults to 'cn=Users'.
        */
-      private String searchBase = LdapProfileService.DEFAULT_SEARCH_BASE;
+      private String searchBase = ActiveDirectoryProfileService.DEFAULT_SEARCH_BASE;
 
       /**
        * Filter to apply when looking for profiles.
        * Defaults to '(&(objectClass=group)(!(isCriticalSystemObject=TRUE)))' 
        */
-      private String searchFilter = LdapProfileService.DEFAULT_SEARCH_FILTER;
+      private String searchFilter = ActiveDirectoryProfileService.DEFAULT_SEARCH_FILTER;
 
       public String[] getObjectClassValues()
       {

@@ -1,6 +1,6 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
-import com.disid.ad.config.LdapProperties.Context;
+import com.disid.ad.config.ActiveDirectoryProperties.Context;
 import com.disid.ad.model.Profile;
 
 import org.springframework.ldap.core.AttributesMapper;
@@ -17,11 +17,11 @@ import javax.naming.directory.Attributes;
 import javax.naming.ldap.LdapName;
 
 /**
- * {@link LdapService} implementation to manage LDAP entries related to the {@link Profile}
+ * {@link ActiveDirectoryService} implementation to manage LDAP entries related to the {@link Profile}
  * entity.
  */
 @Transactional
-public class LdapProfileServiceImpl implements LdapProfileService
+public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfileService
 {
 
   private final LdapTemplate ldapTemplate;
@@ -35,7 +35,7 @@ public class LdapProfileServiceImpl implements LdapProfileService
    * Creates a new service to manage profiles in the ActiveDirectory server
    * @param ldapTemplate to perform ActiveDirectory operations
    */
-  public LdapProfileServiceImpl( LdapTemplate ldapTemplate )
+  public ActiveDirectoryProfileServiceImpl( LdapTemplate ldapTemplate )
   {
     this( ldapTemplate, DEFAULT_OBJECT_CLASSES, DEFAULT_SEARCH_BASE, DEFAULT_SEARCH_FILTER );
   }
@@ -48,7 +48,7 @@ public class LdapProfileServiceImpl implements LdapProfileService
    * {@link Context#getBaseDn()}. This relative base will be used also to create new groups into.
    * @param searchFilter filter to apply when looking for profiles.
    */
-  public LdapProfileServiceImpl( LdapTemplate ldapTemplate, String[] objectClassValues, String searchBase,
+  public ActiveDirectoryProfileServiceImpl( LdapTemplate ldapTemplate, String[] objectClassValues, String searchBase,
       String searchFilter )
   {
     this.ldapTemplate = ldapTemplate;

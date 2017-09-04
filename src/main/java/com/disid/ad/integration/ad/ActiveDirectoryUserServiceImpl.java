@@ -1,6 +1,6 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
-import com.disid.ad.config.LdapProperties.Context;
+import com.disid.ad.config.ActiveDirectoryProperties.Context;
 import com.disid.ad.model.User;
 
 import org.springframework.ldap.core.AttributesMapper;
@@ -22,11 +22,11 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.ldap.LdapName;
 
 /**
- * {@link LdapService} implementation to manage LDAP entries related to the {@link User}
+ * {@link ActiveDirectoryService} implementation to manage LDAP entries related to the {@link User}
  * entity.
  */
 @Transactional
-public class LdapUserServiceImpl implements LdapUserService
+public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserService
 {
   private static final String USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl";
 
@@ -49,7 +49,7 @@ public class LdapUserServiceImpl implements LdapUserService
    * @param nameAttribute the attribute to use as the profile's name
    * @param searchBase 
    */
-  public LdapUserServiceImpl( LdapTemplate ldapTemplate )
+  public ActiveDirectoryUserServiceImpl( LdapTemplate ldapTemplate )
   {
     this( ldapTemplate, DEFAULT_LOGIN_ATTRIBUTE, DEFAULT_PASSWORD_ATTRIBUTE, DEFAULT_OBJECT_CLASSES,
         DEFAULT_SEARCH_BASE, DEFAULT_SEARCH_FILTER );
@@ -65,7 +65,7 @@ public class LdapUserServiceImpl implements LdapUserService
    * {@link Context#getBaseDn()}. This relative base will be used also to create new groups into.
    * @param searchFilter filter to apply when looking for profiles.
    */
-  public LdapUserServiceImpl( LdapTemplate ldapTemplate, String loginAttribute, String passwordAttribute,
+  public ActiveDirectoryUserServiceImpl( LdapTemplate ldapTemplate, String loginAttribute, String passwordAttribute,
       String[] objectClassValues, String searchBase, String searchFilter )
   {
     this.ldapTemplate = ldapTemplate;

@@ -1,7 +1,7 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
 /**
- * Manages local data for a {@link LdapService}. 
+ * Manages local data for a {@link ActiveDirectoryService}. 
  *
  * @param <T> the type of local entity
  */

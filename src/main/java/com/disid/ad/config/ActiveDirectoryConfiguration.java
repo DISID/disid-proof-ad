@@ -1,10 +1,10 @@
 package com.disid.ad.config;
 
-import com.disid.ad.config.LdapProperties.Context;
-import com.disid.ad.integration.ldap.LdapProfileServiceImpl;
-import com.disid.ad.integration.ldap.LdapService;
-import com.disid.ad.integration.ldap.LdapUserServiceImpl;
-import com.disid.ad.integration.ldap.UpdatingLdifPopulator;
+import com.disid.ad.config.ActiveDirectoryProperties.Context;
+import com.disid.ad.integration.ad.ActiveDirectoryProfileServiceImpl;
+import com.disid.ad.integration.ad.ActiveDirectoryService;
+import com.disid.ad.integration.ad.ActiveDirectoryUserServiceImpl;
+import com.disid.ad.integration.ad.UpdatingLdifPopulator;
 import com.disid.ad.model.Profile;
 import com.disid.ad.model.User;
 
@@ -27,10 +27,10 @@ import javax.annotation.PreDestroy;
 import javax.naming.NamingException;
 
 /**
- * Configuration of LDAP services.
+ * Configuration of ActiveDirectory services.
  */
 @Configuration
-public class LdapConfiguration
+public class ActiveDirectoryConfiguration
 {
 
   @Configuration
@@ -39,16 +39,16 @@ public class LdapConfiguration
   protected static class LdapDevConfiguration
   {
     /**
-     * LDAP configuration properties
+     * ActiveDirectory configuration properties
      */
-    private final LdapProperties ldapProperties;
+    private final ActiveDirectoryProperties ldapProperties;
 
     /**
      * Constructor. As it is the single constructor of the class, it is 
      * used automatically by Spring to autowire the parameters.
-     * @param ldapProperties LDAP configuration properties
+     * @param ldapProperties ActiveDirectory configuration properties
      */
-    public LdapDevConfiguration( LdapProperties ldapProperties )
+    public LdapDevConfiguration( ActiveDirectoryProperties ldapProperties )
     {
       this.ldapProperties = ldapProperties;
     }
@@ -92,24 +92,24 @@ public class LdapConfiguration
   protected static class LdapMainConfiguration
   {
     /**
-     * LDAP configuration properties
+     * ActiveDirectory configuration properties
      */
-    private final LdapProperties ldapProperties;
+    private final ActiveDirectoryProperties ldapProperties;
     private ConfigurableApplicationContext applicationContext;
 
     /**
      * Constructor. As it is the single constructor of the class, it is 
      * used automatically by Spring to autowire the parameters.
-     * @param ldapProperties LDAP configuration properties
+     * @param ldapProperties ActiveDirectory configuration properties
      */
-    public LdapMainConfiguration( LdapProperties ldapProperties, ConfigurableApplicationContext applicationContext )
+    public LdapMainConfiguration( ActiveDirectoryProperties ldapProperties, ConfigurableApplicationContext applicationContext )
     {
       this.ldapProperties = ldapProperties;
       this.applicationContext = applicationContext;
     }
 
     /**
-     * Creates the LDAP context source with the parameters to connect to the LDAP server.
+     * Creates the ActiveDirectory context source with the parameters to connect to the ActiveDirectory server.
      *
      * @return {@link DefaultSpringSecurityContextSource}
      */
@@ -118,7 +118,7 @@ public class LdapConfiguration
     {
       DefaultSpringSecurityContextSource contextSource = null;
 
-      LdapProperties.Context context = ldapProperties.getContext();
+      ActiveDirectoryProperties.Context context = ldapProperties.getContext();
 
       if ( !StringUtils.isEmpty( context.getUrl() ) )
       {
@@ -133,7 +133,7 @@ public class LdapConfiguration
     /**
      * Creates a {@link LdapTemplate} for Active Directory (AD).
      *
-     * @return the template to perform LDAP operations
+     * @return the template to perform ActiveDirectory operations
      */
     @Bean
     public LdapTemplate ldapTemplate()
@@ -145,26 +145,26 @@ public class LdapConfiguration
     }
 
     /**
-     * Returns the service to manage groups in the LDAP service.
-     * @return the LDAP groups service
+     * Returns the service to manage groups in the ActiveDirectory service.
+     * @return the ActiveDirectory groups service
      */
     @Bean
-    public LdapService<Profile> ldapProfileService()
+    public ActiveDirectoryService<Profile> ldapProfileService()
     {
-      LdapProperties.Sync.Group group = ldapProperties.getSync().getGroup();
-      return new LdapProfileServiceImpl( ldapTemplate(), group.getObjectClassValues(), group.getSearchBase(),
+      ActiveDirectoryProperties.Sync.Group group = ldapProperties.getSync().getGroup();
+      return new ActiveDirectoryProfileServiceImpl( ldapTemplate(), group.getObjectClassValues(), group.getSearchBase(),
           group.getSearchFilter() );
     }
 
     /**
-     * Returns the service to manage users in the LDAP service.
-     * @return the LDAP users service
+     * Returns the service to manage users in the ActiveDirectory service.
+     * @return the ActiveDirectory users service
      */
     @Bean
-    public LdapService<User> ldapUserService()
+    public ActiveDirectoryService<User> ldapUserService()
     {
-      LdapProperties.Sync.User user = ldapProperties.getSync().getUser();
-      return new LdapUserServiceImpl( ldapTemplate() );
+      ActiveDirectoryProperties.Sync.User user = ldapProperties.getSync().getUser();
+      return new ActiveDirectoryUserServiceImpl( ldapTemplate() );
     }
 
     @Bean

@@ -1,8 +1,10 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.disid.ad.AbstractBaseIT;
+import com.disid.ad.integration.ad.ActiveDirectoryService;
+import com.disid.ad.integration.ad.LocalDataProvider;
 import com.disid.ad.model.Profile;
 import com.disid.ad.service.api.ProfileService;
 
@@ -11,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-public class LdapProfileServiceImplTest extends AbstractBaseIT
+public class ActiveDirectoryProfileServiceImplTest extends AbstractBaseIT
 {
   private static final String NAME_PROPERTY = "name";
   private static final Object[] TEST_DATA_PROFILE_NAMES =
@@ -24,7 +26,7 @@ public class LdapProfileServiceImplTest extends AbstractBaseIT
   private ProfileService service;
 
   @Autowired
-  private LdapService<Profile> ldapProfileService;
+  private ActiveDirectoryService<Profile> ldapProfileService;
 
   @Test
   public void findAllShouldReturnAllProfiles()

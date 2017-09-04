@@ -1,4 +1,4 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
 import org.springframework.ldap.core.AttributesMapper;
 
@@ -6,11 +6,13 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 
 /**
- * Base {@link AttributesMapper} implementation to map LDAP attributes to an entity.
+ * Base {@link AttributesMapper} implementation to get the name of an element, as
+ * well as performing the synchronization of data between the LDAP entries and the
+ * values provided by the LocalDataProvider.
  *
  * @param <T> the entity type
  */
-public abstract class ProvidedAttributeMapper<T> implements AttributesMapper<T>
+public abstract class SynchronizingAttributeMapper<T> implements AttributesMapper<String>
 {
 
   private final LocalDataProvider<T> provider;
@@ -21,13 +23,13 @@ public abstract class ProvidedAttributeMapper<T> implements AttributesMapper<T>
    * @param provider to generate new entity instances
    * @param nameAttribute the ldap attribute with the common name
    */
-  public ProvidedAttributeMapper( LocalDataProvider<T> provider, String nameAttribute )
+  public SynchronizingAttributeMapper( LocalDataProvider<T> provider, String nameAttribute )
   {
     this.provider = provider;
     this.nameAttribute = nameAttribute;
   }
 
-  public T mapFromAttributes( Attributes attrs ) throws NamingException
+  public String mapFromAttributes( Attributes attrs ) throws NamingException
   {
     String name = getName( attrs );
 
@@ -35,7 +37,10 @@ public abstract class ProvidedAttributeMapper<T> implements AttributesMapper<T>
 
     mapAttributesToElement( attrs, element );
 
-    return element;
+    // Store the changes in the local repository
+    provider.saveFromLdap( element );
+
+    return name;
   }
 
   /**
@@ -57,11 +62,19 @@ public abstract class ProvidedAttributeMapper<T> implements AttributesMapper<T>
 
   private T getElement( String name )
   {
-    return provider.createByName( name );
+    // Find in the application database
+    T element = provider.findByName( name );
+    if ( element == null )
+    {
+      element = provider.createByName( name );
+    }
+
+    return element;
   }
 
   private String getName( Attributes attrs ) throws NamingException
   {
     return (String) attrs.get( nameAttribute ).get();
   }
+
 }

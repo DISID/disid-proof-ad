@@ -1,11 +1,11 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
 import com.disid.ad.model.Profile;
 
 /**
- * {@link LdapService} to manage {@link Profile} entities as ActiveDirectory groups.
+ * {@link ActiveDirectoryService} to manage {@link Profile} entities as ActiveDirectory groups.
  */
-public interface LdapProfileService extends LdapService<Profile>
+public interface ActiveDirectoryProfileService extends ActiveDirectoryService<Profile>
 {
   public static final String DEFAULT_NAME_ATTRIBUTE = "cn";
   public static final String DEFAULT_SEARCH_BASE = "cn=Users";

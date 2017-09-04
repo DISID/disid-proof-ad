@@ -1,11 +1,11 @@
-package com.disid.ad.integration.ldap;
+package com.disid.ad.integration.ad;
 
 import com.disid.ad.model.User;
 
 /**
- * {@link LdapService} to manage {@link User} entities as ActiveDirectory users.
+ * {@link ActiveDirectoryService} to manage {@link User} entities as ActiveDirectory users.
  */
-public interface LdapUserService extends LdapService<User>
+public interface ActiveDirectoryUserService extends ActiveDirectoryService<User>
 {
   public static final String DEFAULT_NAME_ATTRIBUTE = "cn";
   public static final String DEFAULT_SEARCH_BASE = "cn=Users";
