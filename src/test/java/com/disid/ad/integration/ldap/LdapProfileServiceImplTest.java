@@ -12,6 +12,10 @@ import java.util.List;
 
 public class LdapProfileServiceImplTest extends AbstractBaseIT
 {
+  private static final String NAME_PROPERTY = "name";
+  private static final Object[] TEST_DATA_PROFILE_NAMES =
+      new Object[] { "Administrators", "Police dispatchers", "Police call talkers" };
+
   @Autowired
   private LocalDataProvider<Profile> profileProvider;
 
@@ -23,8 +27,7 @@ public class LdapProfileServiceImplTest extends AbstractBaseIT
   {
     List<Profile> profiles = ldapProfileService.findAll( profileProvider );
 
-    assertThat( profiles ).isNotEmpty().extracting( "name" ).contains( "Administrators", "Police dispatchers",
-        "Police call talkers" );
+    assertThat( profiles ).isNotEmpty().extracting( NAME_PROPERTY ).contains( TEST_DATA_PROFILE_NAMES );
   }
 
   @Test
@@ -41,14 +44,14 @@ public class LdapProfileServiceImplTest extends AbstractBaseIT
     List<Profile> profilesAfterCreate = ldapProfileService.findAll( profileProvider );
 
     assertThat( profilesAfterCreate ).size().isEqualTo( profilesInitial.size() + 1 );
-    assertThat( profilesAfterCreate ).extracting( "name" ).contains( name );
+    assertThat( profilesAfterCreate ).extracting( NAME_PROPERTY ).contains( name );
 
     ldapProfileService.delete( profile );
 
     List<Profile> profilesAfterDelete = ldapProfileService.findAll( profileProvider );
 
     assertThat( profilesAfterDelete ).size().isEqualTo( profilesAfterCreate.size() - 1 );
-    assertThat( profilesAfterDelete ).extracting( "name" ).doesNotContain( name );
+    assertThat( profilesAfterDelete ).extracting( NAME_PROPERTY ).doesNotContain( name );
   }
 
   @Test
@@ -61,9 +64,18 @@ public class LdapProfileServiceImplTest extends AbstractBaseIT
     String name = oldName + " UPDATED";
     profile.setName( name );
 
+    // Change the name
     ldapProfileService.update( oldName, profile );
 
     List<Profile> profilesAfter = ldapProfileService.findAll( profileProvider );
-    assertThat( profilesAfter ).hasSameSizeAs( profiles ).extracting( "name" ).contains( name );
+    assertThat( profilesAfter ).hasSameSizeAs( profiles ).extracting( NAME_PROPERTY ).contains( name );
+
+    // Return to the original name
+    profile.setName( oldName );
+
+    ldapProfileService.update( name, profile );
+
+    profilesAfter = ldapProfileService.findAll( profileProvider );
+    assertThat( profilesAfter ).hasSameSizeAs( profiles ).extracting( NAME_PROPERTY ).contains( oldName );
   }
 }
