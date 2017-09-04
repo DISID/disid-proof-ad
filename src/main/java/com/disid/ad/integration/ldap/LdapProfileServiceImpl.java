@@ -81,11 +81,6 @@ public class LdapProfileServiceImpl implements LdapService<Profile>
     return ldapIds;
   }
 
-  private <T> List<T> findAllWithMapper( AttributesMapper<T> mapper )
-  {
-    return ldapTemplate.search( searchBase, searchFilter, mapper );
-  }
-
   @Override
   public void create( Profile profile )
   {
@@ -119,21 +114,12 @@ public class LdapProfileServiceImpl implements LdapService<Profile>
     ldapTemplate.unbind( dn );
   }
 
-  private LdapName buildDn( Profile profile )
-  {
-    return buildDn( profile.getName() );
-  }
-
-  private LdapName buildDn( String name )
-  {
-    return baseDnBuilder().add( this.nameAttribute, name ).build();
-  }
-
-  private LdapNameBuilder baseDnBuilder()
-  {
-    return LdapNameBuilder.newInstance( searchBase );
-  }
-
+  /**
+   * {@link AttributesMapper} which returns the list of all available Profile names, while
+   * performing a data synchronization from the LDAP groups to the local aplication profiles.
+   * That means profiles that exist in LDAP but not in the app will be created, the ones that
+   * already exist will be updated, and the ones that don't exist in LDAP will be deleted.
+   */
   private class ProfileSynchronizationAndLdapIdAttributesMapper implements AttributesMapper<String>
   {
 
@@ -164,6 +150,9 @@ public class LdapProfileServiceImpl implements LdapService<Profile>
     }
   }
 
+  /**
+   * {@link AttributesMapper} that maps LDAP group data to new {@link Profile} instances.
+   */
   private class ProfileAttributesMapper implements AttributesMapper<Profile>
   {
 
@@ -184,6 +173,26 @@ public class LdapProfileServiceImpl implements LdapService<Profile>
 
       return profile;
     }
+  }
+
+  private LdapName buildDn( Profile profile )
+  {
+    return buildDn( profile.getName() );
+  }
+
+  private LdapName buildDn( String name )
+  {
+    return baseDnBuilder().add( this.nameAttribute, name ).build();
+  }
+
+  private LdapNameBuilder baseDnBuilder()
+  {
+    return LdapNameBuilder.newInstance( searchBase );
+  }
+
+  private <T> List<T> findAllWithMapper( AttributesMapper<T> mapper )
+  {
+    return ldapTemplate.search( searchBase, searchFilter, mapper );
   }
 
   private void mapAttributes( Attributes attrs, Profile profile ) throws NamingException
