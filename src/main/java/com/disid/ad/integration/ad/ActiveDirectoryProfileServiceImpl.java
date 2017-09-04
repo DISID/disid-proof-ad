@@ -2,18 +2,23 @@ package com.disid.ad.integration.ad;
 
 import com.disid.ad.config.ActiveDirectoryProperties.Context;
 import com.disid.ad.model.Profile;
+import com.disid.ad.model.User;
 
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextAdapter;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
 
+import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
 import javax.naming.ldap.LdapName;
 
 /**
@@ -26,10 +31,11 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
 
   private final LdapTemplate ldapTemplate;
 
-  private final String nameAttribute = DEFAULT_NAME_ATTRIBUTE;
+  private final String nameAttribute = ProfileDefaults.NAME_ATTRIBUTE;
   private final String[] objectClassValues;
-  private final String searchBase;
   private final String searchFilter;
+  private final ProfileDnBuilder dnBuilder;
+  private final UserDnBuilder userDnBuilder;
 
   /**
    * Creates a new service to manage profiles in the ActiveDirectory server
@@ -37,7 +43,8 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
    */
   public ActiveDirectoryProfileServiceImpl( LdapTemplate ldapTemplate )
   {
-    this( ldapTemplate, DEFAULT_OBJECT_CLASSES, DEFAULT_SEARCH_BASE, DEFAULT_SEARCH_FILTER );
+    this( ldapTemplate, ProfileDefaults.OBJECT_CLASSES, new ProfileDnBuilder( ProfileDefaults.SEARCH_BASE ),
+        ProfileDefaults.SEARCH_FILTER, new UserDnBuilder( UserDefaults.SEARCH_BASE ) );
   }
 
   /**
@@ -48,13 +55,14 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
    * {@link Context#getBaseDn()}. This relative base will be used also to create new groups into.
    * @param searchFilter filter to apply when looking for profiles.
    */
-  public ActiveDirectoryProfileServiceImpl( LdapTemplate ldapTemplate, String[] objectClassValues, String searchBase,
-      String searchFilter )
+  public ActiveDirectoryProfileServiceImpl( LdapTemplate ldapTemplate, String[] objectClassValues,
+      ProfileDnBuilder dnBuilder, String searchFilter, UserDnBuilder userDnBuilder )
   {
     this.ldapTemplate = ldapTemplate;
     this.objectClassValues = objectClassValues;
-    this.searchBase = searchBase;
     this.searchFilter = searchFilter;
+    this.dnBuilder = dnBuilder;
+    this.userDnBuilder = userDnBuilder;
   }
 
   @Override
@@ -78,7 +86,7 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
   @Override
   public void create( Profile profile )
   {
-    LdapName dn = buildDn( profile );
+    LdapName dn = dnBuilder.getName( profile );
     DirContextAdapter context = new DirContextAdapter( dn );
 
     context.setAttributeValues( OBJECT_CLASS_ATTRIBUTE, objectClassValues );
@@ -94,8 +102,8 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
 
     if ( !currentName.equals( profile.getName() ) )
     {
-      LdapName dn = buildDn( currentName );
-      LdapName newDn = buildDn( profile );
+      LdapName dn = dnBuilder.getName( currentName );
+      LdapName newDn = dnBuilder.getName( profile );
 
       ldapTemplate.rename( dn, newDn );
     }
@@ -104,8 +112,39 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
   @Override
   public void delete( Profile profile )
   {
-    LdapName dn = buildDn( profile );
+    LdapName dn = dnBuilder.getName( profile );
     ldapTemplate.unbind( dn );
+  }
+
+  @Override
+  public void addUsers( Profile profile, Iterable<User> users )
+  {
+    Name dn = dnBuilder.getName( profile );
+
+    for ( User user : users )
+    {
+      Name userDn = userDnBuilder.getName( user );
+      DirContextOperations operations = ldapTemplate.lookupContext( dn );
+      operations.addAttributeValue( "member", userDn.toString() );
+
+      ldapTemplate.modifyAttributes( operations );
+    }
+  }
+
+  @Override
+  public void removeUsers( Profile profile, Iterable<User> users )
+  {
+    Name groupDn = dnBuilder.getName( profile );
+
+    for ( User user : users )
+    {
+      Name userDn = userDnBuilder.getName( user );
+      //      Name baseLdapName = ( (BaseLdapPathContextSource) ldapTemplate.getContextSource() ).getBaseLdapName();
+      //      userDn = baseLdapName.addAll( userDn );
+
+      ldapTemplate.modifyAttributes( groupDn, new ModificationItem[] {
+          new ModificationItem( DirContext.REMOVE_ATTRIBUTE, new BasicAttribute( "member", userDn.toString() ) ) } );
+    }
   }
 
   /**
@@ -148,24 +187,9 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
     }
   }
 
-  private LdapName buildDn( Profile profile )
-  {
-    return buildDn( profile.getName() );
-  }
-
-  private LdapName buildDn( String name )
-  {
-    return baseDnBuilder().add( this.nameAttribute, name ).build();
-  }
-
-  private LdapNameBuilder baseDnBuilder()
-  {
-    return LdapNameBuilder.newInstance( searchBase );
-  }
-
   private <T> List<T> findAllWithMapper( AttributesMapper<T> mapper )
   {
-    return ldapTemplate.search( searchBase, searchFilter, mapper );
+    return ldapTemplate.search( dnBuilder.getSearchBase(), searchFilter, mapper );
   }
 
   private void mapAttributes( Attributes attrs, Profile profile ) throws NamingException

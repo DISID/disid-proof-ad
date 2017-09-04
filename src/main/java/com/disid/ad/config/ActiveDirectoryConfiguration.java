@@ -4,7 +4,10 @@ import com.disid.ad.config.ActiveDirectoryProperties.Context;
 import com.disid.ad.integration.ad.ActiveDirectoryProfileServiceImpl;
 import com.disid.ad.integration.ad.ActiveDirectoryService;
 import com.disid.ad.integration.ad.ActiveDirectoryUserServiceImpl;
+import com.disid.ad.integration.ad.ProfileDnBuilder;
 import com.disid.ad.integration.ad.UpdatingLdifPopulator;
+import com.disid.ad.integration.ad.UserDefaults;
+import com.disid.ad.integration.ad.UserDnBuilder;
 import com.disid.ad.model.Profile;
 import com.disid.ad.model.User;
 
@@ -102,7 +105,8 @@ public class ActiveDirectoryConfiguration
      * used automatically by Spring to autowire the parameters.
      * @param ldapProperties ActiveDirectory configuration properties
      */
-    public LdapMainConfiguration( ActiveDirectoryProperties ldapProperties, ConfigurableApplicationContext applicationContext )
+    public LdapMainConfiguration( ActiveDirectoryProperties ldapProperties,
+        ConfigurableApplicationContext applicationContext )
     {
       this.ldapProperties = ldapProperties;
       this.applicationContext = applicationContext;
@@ -144,6 +148,19 @@ public class ActiveDirectoryConfiguration
       return ldap;
     }
 
+    @Bean
+    public ProfileDnBuilder profileDnBuilder()
+    {
+      return new ProfileDnBuilder( ldapProperties.getSync().getGroup().getSearchBase() );
+    }
+
+    @Bean
+    public UserDnBuilder userDnBuilder()
+    {
+      //return new UserDnBuilder( ldapProperties.getSync().getUser().getSearchBase() );
+      return new UserDnBuilder( UserDefaults.SEARCH_BASE );
+    }
+
     /**
      * Returns the service to manage groups in the ActiveDirectory service.
      * @return the ActiveDirectory groups service
@@ -152,8 +169,8 @@ public class ActiveDirectoryConfiguration
     public ActiveDirectoryService<Profile> ldapProfileService()
     {
       ActiveDirectoryProperties.Sync.Group group = ldapProperties.getSync().getGroup();
-      return new ActiveDirectoryProfileServiceImpl( ldapTemplate(), group.getObjectClassValues(), group.getSearchBase(),
-          group.getSearchFilter() );
+      return new ActiveDirectoryProfileServiceImpl( ldapTemplate(), group.getObjectClassValues(), profileDnBuilder(),
+          group.getSearchFilter(), userDnBuilder() );
     }
 
     /**

@@ -7,7 +7,6 @@ import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -34,12 +33,12 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
 
   //  private final LdapShaPasswordEncoder encoder = new LdapShaPasswordEncoder();
 
-  private final String nameAttribute = DEFAULT_NAME_ATTRIBUTE;
+  private final String nameAttribute = UserDefaults.NAME_ATTRIBUTE;
   private final String passwordAttribute;
   private final String loginAttribute;
   private final String[] objectClassValues;
-  private final String searchBase;
   private final String searchFilter;
+  private final UserDnBuilder dnBuilder;
 
   /**
    * Creates a new service to manage users in the ActiveDirectory server
@@ -51,8 +50,8 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
    */
   public ActiveDirectoryUserServiceImpl( LdapTemplate ldapTemplate )
   {
-    this( ldapTemplate, DEFAULT_LOGIN_ATTRIBUTE, DEFAULT_PASSWORD_ATTRIBUTE, DEFAULT_OBJECT_CLASSES,
-        DEFAULT_SEARCH_BASE, DEFAULT_SEARCH_FILTER );
+    this( ldapTemplate, UserDefaults.LOGIN_ATTRIBUTE, UserDefaults.PASSWORD_ATTRIBUTE, UserDefaults.OBJECT_CLASSES,
+        new UserDnBuilder( UserDefaults.SEARCH_BASE ), UserDefaults.SEARCH_FILTER );
   }
 
   /**
@@ -66,13 +65,13 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
    * @param searchFilter filter to apply when looking for profiles.
    */
   public ActiveDirectoryUserServiceImpl( LdapTemplate ldapTemplate, String loginAttribute, String passwordAttribute,
-      String[] objectClassValues, String searchBase, String searchFilter )
+      String[] objectClassValues, UserDnBuilder dnBuilder, String searchFilter )
   {
     this.ldapTemplate = ldapTemplate;
     this.passwordAttribute = passwordAttribute;
     this.loginAttribute = loginAttribute;
     this.objectClassValues = objectClassValues;
-    this.searchBase = searchBase;
+    this.dnBuilder = dnBuilder;
     this.searchFilter = searchFilter;
   }
 
@@ -98,7 +97,7 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
   @Transactional
   public void create( User user )
   {
-    LdapName dn = buildDn( user );
+    LdapName dn = dnBuilder.getName( user );
     DirContextAdapter context = new DirContextAdapter( dn );
 
     context.setAttributeValues( OBJECT_CLASS_ATTRIBUTE, objectClassValues );
@@ -110,7 +109,7 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
     // password, userAccountControl must be set to the following
     // otherwise the Win2K3 password filter will return error 53
     // unwilling to perform.
-    context.setAttributeValue( USER_ACCOUNT_CONTROL_ATTRIBUTE, ACCOUNT_CONTROL_PRE_PASSWORD );
+    context.setAttributeValue( USER_ACCOUNT_CONTROL_ATTRIBUTE, UserDefaults.ACCOUNT_CONTROL_PRE_PASSWORD );
 
     ldapTemplate.bind( context );
   }
@@ -122,13 +121,13 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
 
     if ( !currentName.equals( user.getName() ) )
     {
-      LdapName dn = buildDn( currentName );
-      LdapName newDn = buildDn( user );
+      LdapName dn = dnBuilder.getName( currentName );
+      LdapName newDn = dnBuilder.getName( user );
 
       ldapTemplate.rename( dn, newDn );
     }
 
-    LdapName dn = buildDn( user );
+    LdapName dn = dnBuilder.getName( user );
     DirContextOperations operations = ldapTemplate.lookupContext( dn );
 
     operations.setAttributeValue( this.loginAttribute, user.getLogin() );
@@ -139,7 +138,7 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
   @Override
   public void delete( User user )
   {
-    LdapName dn = buildDn( user );
+    LdapName dn = dnBuilder.getName( user );
     ldapTemplate.unbind( dn );
   }
 
@@ -148,7 +147,7 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
   {
     Assert.hasLength( password, "Password must not be empty" );
 
-    LdapName dn = buildDn( user );
+    LdapName dn = dnBuilder.getName( user );
 
     // Set password is a ldap modify operation
     // and we'll update the userAccountControl
@@ -159,7 +158,7 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
         new ModificationItem( DirContext.REPLACE_ATTRIBUTE,
             new BasicAttribute( this.passwordAttribute, newUnicodePassword ) ),
         new ModificationItem( DirContext.REPLACE_ATTRIBUTE,
-            new BasicAttribute( USER_ACCOUNT_CONTROL_ATTRIBUTE, ACCOUNT_CONTROL_POST_PASSWORD ) ) };
+            new BasicAttribute( USER_ACCOUNT_CONTROL_ATTRIBUTE, UserDefaults.ACCOUNT_CONTROL_POST_PASSWORD ) ) };
     ldapTemplate.modifyAttributes( dn, mods );
   }
 
@@ -204,24 +203,9 @@ public class ActiveDirectoryUserServiceImpl implements ActiveDirectoryUserServic
 
   }
 
-  private LdapName buildDn( User user )
-  {
-    return buildDn( user.getName() );
-  }
-
-  private LdapName buildDn( String name )
-  {
-    return baseDnBuilder().add( this.nameAttribute, name ).build();
-  }
-
-  private LdapNameBuilder baseDnBuilder()
-  {
-    return LdapNameBuilder.newInstance( searchBase );
-  }
-
   private <T> List<T> findAllWithMapper( AttributesMapper<T> mapper )
   {
-    return ldapTemplate.search( searchBase, searchFilter, mapper );
+    return ldapTemplate.search( dnBuilder.getSearchBase(), searchFilter, mapper );
   }
 
   private void mapAttributes( Attributes attrs, User user ) throws NamingException

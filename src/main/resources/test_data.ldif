@@ -1,3 +1,6 @@
+# If you are running a test or the application in the STS, if you
+# change this file you have to rebuild the project for it to be updated
+
 dn: dc=sambaad,dc=local
 objectclass: top
 objectclass: domain
@@ -9,6 +12,8 @@ objectclass: top
 objectclass: organizationalUnit
 cn: Users
 
+## GROUPS (PROFILES)
+
 dn: cn=Administrators,cn=Users,dc=sambaad,dc=local
 objectclass: top
 objectclass: group
@@ -18,11 +23,16 @@ dn: cn=Police dispatchers,cn=Users,dc=sambaad,dc=local
 objectclass: top
 objectclass: group
 cn: Police dispatchers
+#member: cn=Summer Nine,cn=Users,dc=sambaad,dc=local
 
 dn: cn=Police call talkers,cn=Users,dc=sambaad,dc=local
 objectclass: top
 objectclass: group
 cn: Police call talkers
+#member: cn=Call take supervisor,cn=Users,dc=sambaad,dc=local
+#member: cn=Ken Ryan,cn=Users,dc=sambaad,dc=local
+
+## USERS
 
 dn: cn=Call take supervisor,cn=Users,dc=sambaad,dc=local
 objectclass: top
@@ -50,3 +60,4 @@ objectclass: user
 cn: Summer Nine
 sAMAccountName: Chengdu
 userAccountControl: 512
+
