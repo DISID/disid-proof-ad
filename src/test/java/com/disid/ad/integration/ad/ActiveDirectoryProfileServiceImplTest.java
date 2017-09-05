@@ -111,9 +111,8 @@ public class ActiveDirectoryProfileServiceImplTest extends AbstractBaseIT
 
     List<String> initialUserNames = ldapProfileService.getUserNames( firstProfile );
 
-    User userToAdd = new User();
+    User userToAdd = userProvider.createByName( "User to add" );
     userToAdd.setLogin( "userToAdd" );
-    userToAdd.setName( "User to add" );
 
     ldapUserService.create( userToAdd );
     ldapProfileService.addUsers( firstProfile, Collections.singletonList( userToAdd ) );
