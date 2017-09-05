@@ -12,27 +12,12 @@ objectclass: top
 objectclass: organizationalUnit
 cn: Users
 
-## GROUPS (PROFILES)
-
-dn: cn=Administrators,cn=Users,dc=sambaad,dc=local
-objectclass: top
-objectclass: group
-cn: Administrators
-
-dn: cn=Police dispatchers,cn=Users,dc=sambaad,dc=local
-objectclass: top
-objectclass: group
-cn: Police dispatchers
-#member: cn=Summer Nine,cn=Users,dc=sambaad,dc=local
-
-dn: cn=Police call talkers,cn=Users,dc=sambaad,dc=local
-objectclass: top
-objectclass: group
-cn: Police call talkers
-#member: cn=Call take supervisor,cn=Users,dc=sambaad,dc=local
-#member: cn=Ken Ryan,cn=Users,dc=sambaad,dc=local
-
 ## USERS
+
+# Users must be created before groups, as they are referenced
+# through the group 'member' property. The user 'memberOf'
+# property can't be used as it is a linked property that
+# can't be written.
 
 dn: cn=Call take supervisor,cn=Users,dc=sambaad,dc=local
 objectclass: top
@@ -60,4 +45,24 @@ objectclass: user
 cn: Summer Nine
 sAMAccountName: Chengdu
 userAccountControl: 512
+
+## GROUPS (PROFILES)
+
+dn: cn=Administrators,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: group
+cn: Administrators
+
+dn: cn=Police dispatchers,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: group
+cn: Police dispatchers
+member: cn=Summer Nine,cn=Users,dc=sambaad,dc=local
+
+dn: cn=Police call talkers,cn=Users,dc=sambaad,dc=local
+objectclass: top
+objectclass: group
+cn: Police call talkers
+member: cn=Call take supervisor,cn=Users,dc=sambaad,dc=local
+member: cn=Ken Ryan,cn=Users,dc=sambaad,dc=local
 

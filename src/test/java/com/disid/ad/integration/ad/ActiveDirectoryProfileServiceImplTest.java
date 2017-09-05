@@ -109,19 +109,25 @@ public class ActiveDirectoryProfileServiceImplTest extends AbstractBaseIT
     List<Profile> profiles = ldapProfileService.findAll( profileProvider );
     Profile firstProfile = profiles.get( 0 );
 
-    List<User> users = ldapUserService.findAll( userProvider );
+    List<String> initialUserNames = ldapProfileService.getUserNames( firstProfile );
 
-    ldapProfileService.addUsers( firstProfile, users );
+    User userToAdd = new User();
+    userToAdd.setLogin( "userToAdd" );
+    userToAdd.setName( "User to add" );
 
-    List<String> userNames = ldapProfileService.getUserNames( firstProfile );
+    ldapUserService.create( userToAdd );
+    ldapProfileService.addUsers( firstProfile, Collections.singletonList( userToAdd ) );
+
+    List<String> afterUserNames = ldapProfileService.getUserNames( firstProfile );
     
-    assertThat( userNames ).hasSameSizeAs( users );
+    assertThat( afterUserNames ).size().isEqualTo( initialUserNames.size() + 1 );
     
-    ldapProfileService.removeUsers( firstProfile, Collections.singleton( users.get( 0 ) ) );
+    ldapProfileService.removeUsers( firstProfile, Collections.singleton( userToAdd ) );
     
     List<String> userNamesAfterRemove = ldapProfileService.getUserNames( firstProfile );
     
-    assertThat( userNamesAfterRemove ).size().isEqualTo( userNames.size() - 1 );
+    assertThat( userNamesAfterRemove ).size().isEqualTo( initialUserNames.size() );
     
+    ldapUserService.delete( userToAdd );
   }
 }
