@@ -4,7 +4,7 @@ package com.disid.ad.integration.ad;
  * Default values for the configuration of the integration with Profile (groups)
  * in ActiveDirectory.
  */
-public interface ProfileDefaults
+public interface ProfileActiveDirectoryDefaults
 {
   static final String NAME_ATTRIBUTE = "cn";
   static final String SEARCH_BASE = "cn=Users";

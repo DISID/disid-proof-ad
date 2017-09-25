@@ -34,9 +34,11 @@ import javax.naming.ldap.LdapName;
 public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfileService
 {
 
+  private static final String MEMBER = "member";
+
   private final LdapTemplate ldapTemplate;
 
-  private final String nameAttribute = ProfileDefaults.NAME_ATTRIBUTE;
+  private final String nameAttribute = ProfileActiveDirectoryDefaults.NAME_ATTRIBUTE;
   private final String[] objectClassValues;
   private final String searchFilter;
   private final ProfileDnBuilder dnBuilder;
@@ -48,8 +50,8 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
    */
   public ActiveDirectoryProfileServiceImpl( LdapTemplate ldapTemplate )
   {
-    this( ldapTemplate, ProfileDefaults.OBJECT_CLASSES, new ProfileDnBuilder( ProfileDefaults.SEARCH_BASE ),
-        ProfileDefaults.SEARCH_FILTER, new UserDnBuilder( UserDefaults.SEARCH_BASE ) );
+    this( ldapTemplate, ProfileActiveDirectoryDefaults.OBJECT_CLASSES, new ProfileDnBuilder( ProfileActiveDirectoryDefaults.SEARCH_BASE ),
+        ProfileActiveDirectoryDefaults.SEARCH_FILTER, new UserDnBuilder( UserDefaults.SEARCH_BASE ) );
   }
 
   /**
@@ -139,7 +141,7 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
         throw LdapUtils.convertLdapException( e );
       }
       DirContextOperations operations = ldapTemplate.lookupContext( dn );
-      operations.addAttributeValue( "member", userDn.toString() );
+      operations.addAttributeValue( MEMBER, userDn.toString() );
 
       ldapTemplate.modifyAttributes( operations );
     }
@@ -164,7 +166,7 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
       }
 
       ldapTemplate.modifyAttributes( groupDn, new ModificationItem[] {
-          new ModificationItem( DirContext.REMOVE_ATTRIBUTE, new BasicAttribute( "member", userDn.toString() ) ) } );
+          new ModificationItem( DirContext.REMOVE_ATTRIBUTE, new BasicAttribute( MEMBER, userDn.toString() ) ) } );
     }
   }
 
@@ -181,7 +183,7 @@ public class ActiveDirectoryProfileServiceImpl implements ActiveDirectoryProfile
         List<String> userNames = new ArrayList<>();
         //        LdapUtils.collectAttributeValues( attributes, "member", userNames, String.class );
 
-        Enumeration<?> values = attributes.get( "member" ).getAll();
+        Enumeration<?> values = attributes.get( MEMBER ).getAll();
 
         while ( values.hasMoreElements() )
         {

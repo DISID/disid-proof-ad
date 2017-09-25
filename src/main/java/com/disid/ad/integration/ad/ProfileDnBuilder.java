@@ -20,7 +20,7 @@ public class ProfileDnBuilder
    */
   public ProfileDnBuilder( String searchBase )
   {
-    this( searchBase, ProfileDefaults.NAME_ATTRIBUTE );
+    this( searchBase, ProfileActiveDirectoryDefaults.NAME_ATTRIBUTE );
   }
 
   /**
